@@ -35,7 +35,7 @@ if ($ComputerName -eq $DCVmName) {
 }
 elseif ($ComputerName -eq $ClientVmName) {
     # Configure DNS to point to DC
-    Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses ("10.0.1.4")
+    Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses ("10.0.1.10")
 
     # Join the domain
     Add-Computer -DomainName $DomainName -Credential $Credential -OUPath "OU=Servers,DC=ptc,DC=corp" -Restart
