@@ -24,7 +24,7 @@ if ($ComputerName -eq $DCVmName) {
         -DomainMode WinThreshold `
         -ForestMode WinThreshold `
         -DatabasePath "C:\Windows\NTDS" `
-        -SysvolPath "C:\Windows\SYSVOL"
+        -SysvolPath "C:\Windows\SYSVOL" `
         -LogPath "C:\Windows\NTDS" `
         -NoRebootOnCompletion:$false `
         -Force:$true `
