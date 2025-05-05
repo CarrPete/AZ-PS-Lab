@@ -62,15 +62,37 @@ catch {
 # Create a scheduled task to run OU creation after reboot
 Write-Log "Creating scheduled task for OU creation"
 $TaskScript = @"
-Import-Module ActiveDirectory
-try {
-    New-ADOrganizationalUnit -Name "Servers" -Path "DC=ptc,DC=corp" -ProtectedFromAccidentalDeletion `$true -ErrorAction Stop
-    "OU creation successful" | Out-File -FilePath C:\ConfigureDC.log -Append
+Start-Sleep -Seconds 60
+`$LogFile = "C:\ConfigureDC.log"
+function Write-Log {
+    param (`$Message)
+    `$Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    "`$Timestamp - `$Message" | Out-File -FilePath `$LogFile -Append
 }
-catch {
-    "Error creating OU: `$_" | Out-File -FilePath C:\ConfigureDC.log -Append
+`$MaxRetries = 5
+`$RetryCount = 0
+`$Success = `$false
+while (-not `$Success -and `$RetryCount -lt `$MaxRetries) {
+    try {
+        Import-Module ActiveDirectory -ErrorAction Stop
+        Write-Log "Attempting OU creation (Attempt `$($RetryCount + 1))"
+        New-ADOrganizationalUnit -Name "Servers" -Path "DC=ptc,DC=corp" -ProtectedFromAccidentalDeletion `$true -ErrorAction Stop
+        Write-Log "OU creation successful"
+        `$Success = `$true
+    }
+    catch {
+        Write-Log "Error creating OU: `$_"
+        `$RetryCount++
+        if (`$RetryCount -lt `$MaxRetries) {
+            Write-Log "Retrying in 30 seconds..."
+            Start-Sleep -Seconds 30
+        }
+    }
 }
-"$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') - OU creation task completed" | Out-File -FilePath C:\ConfigureDC.log -Append
+if (-not `$Success) {
+    Write-Log "Failed to create OU after `$MaxRetries attempts"
+}
+Write-Log "OU creation task completed"
 "@
 
 $TaskScript | Out-File -FilePath "C:\CreateOU.ps1" -Encoding ASCII
