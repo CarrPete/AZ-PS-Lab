@@ -57,7 +57,7 @@ catch {
 # Configure DNS to point to DC
 Write-Log "Configuring DNS to 10.0.1.4"
 try {
-    Set-DnsClientServerAddress -InterfaceAlias $InterfaceAlias -ServerAddresses ("10.0.1.4") -ErrorAction Stop
+    Set-DnsClientServerAddress -InterfaceAlias $InterfaceAlias -ServerAddresses ("10.0.1.10") -ErrorAction Stop
     Write-Log "DNS configured successfully"
 }
 catch {
