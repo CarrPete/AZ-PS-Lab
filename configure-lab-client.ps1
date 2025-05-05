@@ -16,6 +16,21 @@ function Write-Log {
 # Initial log entry
 Write-Log "Script started on Client01"
 
+# Verify script file presence
+Write-Log "Verifying script file presence..."
+try {
+    $ScriptPath = $PSCommandPath
+    if (-not (Test-Path $ScriptPath)) {
+        Write-Log "Script file not found at $ScriptPath"
+        exit 1
+    }
+    Write-Log "Script file found: $ScriptPath"
+}
+catch {
+    Write-Log "Error verifying script file: $_"
+    exit 1
+}
+
 # Secure credential creation
 Write-Log "Creating credentials for domain join"
 try {
@@ -55,9 +70,9 @@ catch {
 }
 
 # Configure DNS to point to DC
-Write-Log "Configuring DNS to 10.0.1.10"
+Write-Log "Configuring DNS to 10.0.1.4"
 try {
-    Set-DnsClientServerAddress -InterfaceAlias $InterfaceAlias -ServerAddresses ("10.0.1.10") -ErrorAction Stop
+    Set-DnsClientServerAddress -InterfaceAlias $InterfaceAlias -ServerAddresses ("10.0.1.4") -ErrorAction Stop
     Write-Log "DNS configured successfully"
 }
 catch {
