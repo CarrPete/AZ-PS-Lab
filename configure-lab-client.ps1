@@ -5,10 +5,6 @@ param (
     [string]$ClientVmName = "Client01"
 )
 
-# Secure credential creation
-$SecurePassword = ConvertTo-SecureString $AdminPassword -AsPlainText -Force
-$Credential = New-Object System.Management.Automation.PSCredential ($AdminUsername, $SecurePassword)
-
 # Logging setup
 $LogFile = "C:\ConfigureClient.log"
 function Write-Log {
@@ -19,6 +15,19 @@ function Write-Log {
 
 # Initial log entry
 Write-Log "Script started on Client01"
+
+# Secure credential creation
+Write-Log "Creating credentials for domain join"
+try {
+    $DomainQualifiedUsername = "ptc\$AdminUsername"
+    $SecurePassword = ConvertTo-SecureString $AdminPassword -AsPlainText -Force
+    $Credential = New-Object System.Management.Automation.PSCredential ($DomainQualifiedUsername, $SecurePassword)
+    Write-Log "Credentials created for user: $DomainQualifiedUsername"
+}
+catch {
+    Write-Log "Error creating credentials: $_"
+    exit 1
+}
 
 # Determine if running on Client
 $ComputerName = (Get-WmiObject Win32_ComputerSystem).Name
@@ -48,7 +57,7 @@ catch {
 # Configure DNS to point to DC
 Write-Log "Configuring DNS to 10.0.1.4"
 try {
-    Set-DnsClientServerAddress -InterfaceAlias $InterfaceAlias -ServerAddresses ("10.0.1.10") -ErrorAction Stop
+    Set-DnsClientServerAddress -InterfaceAlias $InterfaceAlias -ServerAddresses ("10.0.1.4") -ErrorAction Stop
     Write-Log "DNS configured successfully"
 }
 catch {
