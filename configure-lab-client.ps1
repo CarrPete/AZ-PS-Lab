@@ -29,7 +29,7 @@ Write-Log "Starting configuration for Client01"
 # Configure DNS to point to DC
 Write-Log "Configuring DNS"
 try {
-    Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses ("10.0.1.4") -ErrorAction Stop
+    Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses ("10.0.1.10") -ErrorAction Stop
     Write-Log "DNS configured successfully"
 }
 catch {
