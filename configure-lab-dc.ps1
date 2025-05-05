@@ -69,7 +69,7 @@ function Write-Log {
     `$Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     "`$Timestamp - `$Message" | Out-File -FilePath `$LogFile -Append
 }
-`$MaxRetries = 5
+`$MaxRetries = 10
 `$RetryCount = 0
 `$Success = `$false
 while (-not `$Success -and `$RetryCount -lt `$MaxRetries) {
